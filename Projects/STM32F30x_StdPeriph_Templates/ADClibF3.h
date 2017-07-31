@@ -12,15 +12,19 @@
 #include "stm32f30x.h"
 
 #define ADC12_CDR_ADDRESS    ((uint32_t)0x5000030C)
-static const float filtrCoefficients[]={0.0032336752634440106, 0.040192824366562636, 0.084067149188913476, 0.13912375443508521, 0.18360264434522341, 0.20077628315128423, 0.18360264434522341, 0.13912375443508521, 0.084067149188913476, 0.040192824366562636, 0.0032336752634440106};
-static const int16_t offset = 1500;
 
 void initADC(void);
-void DMA1_Channel1_IRQHandler(void);
-void lowPassFiletr(void);
 
-volatile int16_t adcWartosc[3];
-volatile uint16_t adcRawData[3];
-volatile int filtrOldSamples[3][10];
+volatile int16_t adcValue[3];
+volatile int16_t currentValue[3];
+
+void lowPassFilterFIR(void);
+void lowPassFilterIIR(void);
+// Do filtru dolnoprzepustowego
+static const float filtrCoefficients[]={0.0032336752634440106, 0.040192824366562636, 0.084067149188913476, 0.13912375443508521, 0.18360264434522341, 0.20077628315128423, 0.18360264434522341, 0.13912375443508521, 0.084067149188913476, 0.040192824366562636, 0.0032336752634440106};
+static const int16_t offset[] = { 1800, 1800, 1800 };
+volatile int16_t oldCurrentSamples[3][10];
+
+static const float alfa = 0.1;
 
 #endif

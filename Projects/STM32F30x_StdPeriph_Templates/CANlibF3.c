@@ -121,9 +121,13 @@ void USB_HP_CAN1_TX_IRQHandler(void) {
 ///==================================================================================================
 //Ustawia odpowiednie predkosci dla kolejnych silnikow wedlug zawartosci odebranej ramki CAN
 void readSpeed() {
-	zadPredkosc1 = RxMessage.Data[1];
-	zadPredkosc2 = RxMessage.Data[2];
-	zadPredkosc3 = RxMessage.Data[3];
+	static volatile int8_t read1;
+	static volatile int8_t read2;
+	static volatile int8_t read3;
+	read1 = RxMessage.Data[1];
+	read2 = RxMessage.Data[2];
+	read3 = RxMessage.Data[3];
+	setPWM(read1*20, read2*20, read3*20);
 }
 
 void pwmStartStop() {
@@ -134,7 +138,6 @@ void pwmStartStop() {
 	}
 }
 
-
 void sendSpeed(void) {
 	TxMessage.StdId = 0x125;
 	TxMessage.DLC = 7;
@@ -143,10 +146,6 @@ void sendSpeed(void) {
 	} else {
 		TxMessage.Data[0] = 'v';
 	}
-
-
-
-
 	TxMessage.Data[1] = enkPredkosc1 & 0xFF;
 	TxMessage.Data[2] = (enkPredkosc1 & 0xFF00) >> 8;
 	TxMessage.Data[3] = enkPredkosc2 & 0xFF;
@@ -164,17 +163,18 @@ void sendCurrent(void) {
 	} else {
 		TxMessage.Data[0] = 'i';
 	}
-	TxMessage.Data[1] = adcWartosc[0] & 0xFF;
-	TxMessage.Data[2] = (adcWartosc[0] & 0xFF00) >> 8;
-	TxMessage.Data[3] = adcWartosc[1] & 0xFF;
-	TxMessage.Data[4] = (adcWartosc[1] & 0xFF00) >> 8;
-	TxMessage.Data[5] = adcWartosc[2] & 0xFF;
-	TxMessage.Data[6] = (adcWartosc[2] & 0xFF00) >> 8;
+	TxMessage.Data[1] = currentValue[0] & 0xFF;
+	TxMessage.Data[2] = (currentValue[0] & 0xFF00) >> 8;
+	TxMessage.Data[3] = currentValue[1] & 0xFF;
+	TxMessage.Data[4] = (currentValue[1] & 0xFF00) >> 8;
+	TxMessage.Data[5] = currentValue[2] & 0xFF;
+	TxMessage.Data[6] = (currentValue[2] & 0xFF00) >> 8;
 
 	CAN_Transmit(CAN1, &TxMessage);
 }
 
 void sendParam(void) {
+	lowPassFilterFIR();
 	static int licznik = -1;
 	if (licznik == -1 && stronaPlytka == 1) {
 		licznik = 25;

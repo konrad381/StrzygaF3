@@ -1,5 +1,6 @@
 #include "ADClibF3.h"
 
+
 //----------------------------------------------------------------------------------
 /**Funkcja inicjalizuje pomiar napiêcia ADC na trzech kana³ach (PA4, PB13, PC0) i przesy³anie ich za pomoc¹ DMA1 chanel1 do
  * zmiennej "adcWartosc[]" -> tablica 3 elementowa
@@ -10,10 +11,9 @@ void initADC(void) {
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
-//	 NVIC_InitTypeDef NVIC_InitStructure;
-	volatile int i;
 
-	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div1);
+
+	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div4);
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ADC12, ENABLE);
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
@@ -36,7 +36,7 @@ void initADC(void) {
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC12_CDR_ADDRESS;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) &adcRawData[0];
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) &adcValue[0];
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
 	DMA_InitStructure.DMA_BufferSize = 3;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -47,22 +47,15 @@ void initADC(void) {
 	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
 
-//	NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//	NVIC_Init(&NVIC_InitStructure);
-//
-//	DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
-
 	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
 
 	ADC_VoltageRegulatorCmd(ADC1, ENABLE);
 	/* Insert delay equal to 10 µs */
-	for (i = 0; i < 10000; i++)
+	for (int i = 0; i < 10000; i++)
 		;
 
 	ADC_CommonInitStructure.ADC_Mode = ADC_Mode_RegSimul;
-	ADC_CommonInitStructure.ADC_Clock = ADC_Clock_SynClkModeDiv1;
+	ADC_CommonInitStructure.ADC_Clock = ADC_Clock_SynClkModeDiv4;
 	ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_1; // 12-bit
 	ADC_CommonInitStructure.ADC_DMAMode = ADC_DMAMode_Circular;
 	ADC_CommonInitStructure.ADC_TwoSamplingDelay = 1;
@@ -81,9 +74,9 @@ void initADC(void) {
 
 	ADC_Init(ADC1, &ADC_InitStructure);
 
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_61Cycles5);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 2, ADC_SampleTime_61Cycles5);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_61Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_1Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 2, ADC_SampleTime_1Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_1Cycles5);
 
 	ADC_DMAConfig(ADC1, ADC_DMAMode_Circular);
 	ADC_DMACmd(ADC1, ENABLE);
@@ -96,24 +89,20 @@ void initADC(void) {
 	ADC_StartConversion(ADC1);
 }
 
-float wynik = 0;
-
-void lowPassFiletr(void) {
-	for (int j = 0; j < 3; j++) {
-		wynik = 0;
-		for (int i = 9; i > 0; i++) {
-			wynik += filtrOldSamples[j][i] * filtrCoefficients[i];
-			filtrOldSamples[j][i] = filtrOldSamples[j][i - 1];
-		}
-		wynik += filtrOldSamples[j][0] * filtrCoefficients[0];
-		filtrOldSamples[j][0] = adcRawData[j];
-		adcWartosc[j] = (int16_t) wynik - offset;
+void lowPassFilterIIR(void){
+	for(int i=0;i<3;i++){
+	currentValue[i]=currentValue[i]+(int)(alfa*(adcValue[i]-currentValue[i]-offset[i]));
 	}
 }
 
-//void DMA1_Channel1_IRQHandler(void) {
-//	if (DMA_GetITStatus(DMA_IT_TC) != RESET) {
-//		//lowPassFiletr();
-//		DMA_ClearITPendingBit(DMA_IT_TC);
-//	}
-//}
+void lowPassFilterFIR(void){
+	for(int i=0;i<3;i++){
+		currentValue[i]=0;
+		for(int j=9;j>0;j--){
+			currentValue[i]+=oldCurrentSamples[i][j]*filtrCoefficients[j];
+			oldCurrentSamples[i][j]=oldCurrentSamples[i][j-1];
+		}
+		currentValue[i]+=oldCurrentSamples[i][0]*filtrCoefficients[0];
+		oldCurrentSamples[i][0]=adcValue[i];
+		}
+}

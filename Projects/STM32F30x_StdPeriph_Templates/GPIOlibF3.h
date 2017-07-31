@@ -10,6 +10,6 @@
 #include "stm32f30x.h"
 
 void initGpioMotors(void);
-
+void initGpioLed(void);
 
 #endif

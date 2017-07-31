@@ -21,26 +21,42 @@ int main(void) {
 		while (1)
 			;
 	}
-	//initCan();
-	//initENK();
+	initCan();
+	initENK();
 	initGpioMotors();
+	initGpioLed();
 	initPwm();
 	initADC();
-	initUART();
-	startMotors();
+	//initUART();
+	//startMotors();
 
 	while (1) {
 		Delay(50);
-		uint8_t bufor[10];
-		bufor[0] = '#';
-		bufor[1] = (adcWartosc[0] & 0xFF);
-		bufor[2] = ((adcWartosc[0] & 0xFF00) >> 8);
-		bufor[3] = (adcWartosc[1] & 0xFF);
-		bufor[4] = ((adcWartosc[1] & 0xFF00) >> 8);
-		bufor[5] = (adcWartosc[2] & 0xFF);
-		bufor[6] = ((adcWartosc[2] & 0xFF00) >> 8);
+//		for(int i=0;i<3;i++){
+//			adcRawData[i]=adcRawData[i]+(adcWartosc[i]-adcRawData[i]);
+//			}
 
-		UART2wyslij(&bufor[0], 7);
+//		uint8_t bufor[10];
+//		bufor[0] = '#';
+//		bufor[1] = (currentValue[1] & 0xFF);
+//		bufor[2] = ((currentValue[1] & 0xFF00) >> 8);
+//		bufor[3] = (currentValue[2] & 0xFF);
+//		bufor[4] = ((currentValue[2] & 0xFF00) >> 8);
+//		bufor[5] = (currentValueRawADC[2] & 0xFF);
+//		bufor[6] = ((currentValueRawADC[2] & 0xFF00) >> 8);
+//
+//		UART2wyslij(&bufor[0], 7);
+//
+//		uint8_t bufor[10];
+//		bufor[0] = '#';
+//		bufor[1] = (enkPredkosc1 & 0xFF);
+//		bufor[2] = ((enkPredkosc1 & 0xFF00) >> 8);
+//		bufor[3] = (enkPredkosc3 & 0xFF);
+//		bufor[4] = ((enkPredkosc3 & 0xFF00) >> 8);
+//		bufor[5] = (enkTest & 0xFF);
+//		bufor[6] = ((enkTest & 0xFF00) >> 8);
+//
+//		UART2wyslij(&bufor[0], 7);
 	}
 }
 
@@ -56,7 +72,6 @@ void TimingDelay_Decrement(void) {
 	if (TimingDelay != 0x00) {
 		TimingDelay--;
 	}
-	//setPID();
-	//sendParam();
+	sendParam();
 }
 

@@ -14,5 +14,6 @@ void setPWM(int16_t duty1, int16_t duty2, int16_t duty3);
 void stopMotors(void);
 void startMotors(void);
 void initPwm(void);
+void TIM1_BRK_TIM15_IRQHandler(void);
 
 #endif

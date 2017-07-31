@@ -29,6 +29,10 @@ int16_t enkPredkosc3;
 
 int16_t enkPredkosc[3];
 
+int16_t enkTest;
+void lowPassFilterENKtest(void);
+
+
 void TIM1_TRG_COM_TIM17_IRQHandler(void);
 void TIM1_UP_TIM16_IRQHandler(void);
 void TIM2_IRQHandler(void);

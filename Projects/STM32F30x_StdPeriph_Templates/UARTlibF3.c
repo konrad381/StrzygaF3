@@ -59,8 +59,7 @@ void USART1_IRQHandler() {
 				odbiorRamki = 0;
 				wykonajPolecenie();
 			}
-		}
-		else {
+		} else {
 			if (inputChar == '#') {
 				odbiorRamki = 1;
 				znakiDoOdebrania = 3;
@@ -104,8 +103,8 @@ void USART1_IRQHandler() {
 
 void wykonajPolecenie(void) {
 
-	setReferenceCurrent((int8_t) polecenie[0],(int8_t) polecenie[1], (int8_t)polecenie[2]);
-	 setPWM((int8_t) polecenie[0],(int8_t) polecenie[1], (int8_t)polecenie[2]);
+	setReferenceCurrent((int8_t) polecenie[0], (int8_t) polecenie[1],
+			(int8_t) polecenie[2]);
 }
 
 //===============================================================================

@@ -105,6 +105,7 @@ void initENK(void) {
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
+
 	TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;
 	TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;
 	TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
@@ -130,7 +131,7 @@ void TIM2_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM2, TIM_IT_CC2) != RESET) {
 		TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
 
-		enkPredkosc1 = 4608000 /TIM_GetCapture2(TIM2);
+		enkPredkosc1 = 4608000 / TIM_GetCapture2(TIM2);
 
 		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_15) == 0) {
 			enkPredkosc1 = (-enkPredkosc1);
@@ -147,7 +148,7 @@ void TIM1_UP_TIM16_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM16, TIM_IT_CC1) != RESET) {
 		TIM_ClearITPendingBit(TIM16, TIM_IT_CC1);
 
-		enkPredkosc2 = 4608000/ TIM_GetCapture1(TIM16);
+		enkPredkosc2 = 4608000 / TIM_GetCapture1(TIM16);
 
 		if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_10) == 0) {
 			enkPredkosc2 = (-enkPredkosc2);
@@ -173,4 +174,28 @@ void TIM1_TRG_COM_TIM17_IRQHandler(void) {
 		TIM_ClearITPendingBit(TIM17, TIM_IT_Update);
 		enkPredkosc3 = 0;
 	}
+
+	lowPassFilterENKtest();
+}
+
+/*
+ * Pomiar wype³nienia impulsu PWM
+ * TIMER Prescaler 10
+void TIM1_TRG_COM_TIM17_IRQHandler(void) {
+	if (TIM_GetITStatus(TIM17, TIM_IT_CC1) != RESET) {
+		TIM_ClearITPendingBit(TIM17, TIM_IT_CC1);
+		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == 0) {
+			TIM_SetCounter(TIM17, 0);
+		} else {
+			enkPredkosc3 = TIM_GetCapture1(TIM17);
+		}
+	}else if (TIM_GetITStatus(TIM17, TIM_IT_Update) != RESET) {
+		TIM_ClearITPendingBit(TIM17, TIM_IT_Update);
+		enkPredkosc2 = 0;
+	}
+	lowPassFilterENKtest();
+}
+*/
+void lowPassFilterENKtest(void) {
+	enkTest = enkTest + (int) (0.1 * (enkPredkosc3 - enkTest));
 }

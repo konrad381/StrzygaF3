@@ -4,13 +4,7 @@ TIM_OCInitTypeDef channel;
 
 //==================================================================================================
 //Ustawia pedkosci kolejnych silnikow (wypelnieniePWM)
-
 void setPWM(int16_t duty1, int16_t duty2, int16_t duty3) {
-
-	duty1 = duty1 * 20;
-	duty2 = duty2 * 20;
-	duty3 = duty3 * 20;
-
 	if (duty1 > 0) {
 		channel.TIM_Pulse = 0;
 		TIM_OC1Init(TIM15, &channel);
@@ -187,6 +181,8 @@ void initPwm() {
 
 	TIM_Cmd(TIM15, ENABLE);
 	TIM_CtrlPWMOutputs(TIM15, ENABLE);
+
+	resetIntegralValue();
 }
 
 //==================================================================================================
@@ -194,8 +190,7 @@ void initPwm() {
 void TIM1_BRK_TIM15_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM15, TIM_IT_Update) != RESET) {
 		TIM_ClearITPendingBit(TIM15, TIM_IT_Update);
-		//setPICurrent();
-		//lowPassFiletr();
-		setPWM(referenceCurrent[0], referenceCurrent[1], referenceCurrent[2]);
+		//lowPassFilterSimple();
+		//setPWM(referenceCurrent[0]*20, referenceCurrent[1]*20, referenceCurrent[2]*20);
 	}
 }
