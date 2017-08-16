@@ -5,17 +5,22 @@
 #include "ENKlibF3.h"
 #include "CANlibF3.h"
 #include "PWMlibF3.h"
+#include "EXTIlibF3.h"
 
-void setPICurrent(void);
-void setPIVelocity(void);
+typedef struct {
+	volatile int16_t referenceValu[3];
+	volatile int16_t referenceVelocity[3];
+	volatile int16_t referenceCurrent[3];
+	volatile int16_t referenceInertial[3];
 
-void setReferenceCurrent(int16_t current1, int16_t current2, int16_t current3);
-void setReferenceVelocity(int16_t velocity1, int16_t velocity2, int16_t velocity3);
+} regulatorOut_TypeDef;
+
+regulatorOut_TypeDef referenceData;
 
 void resetIntegralValue(void);
+void setReferenceSpeed(int16_t speed1, int16_t speed2, int16_t speed3);
+void regulatorSilnikow(void);
 
-volatile int16_t referenceCurrent[3];
-volatile int16_t referenceVelocity[3];
 
 uint16_t currentGainP;
 uint16_t currentGainI;
@@ -24,5 +29,7 @@ uint16_t currentGainK;
 uint16_t velocityGainP;
 uint16_t velocityGainI;
 uint16_t velocityGainK;
+
+float inertialGain;
 
 #endif

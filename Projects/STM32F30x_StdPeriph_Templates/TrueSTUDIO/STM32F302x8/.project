@@ -262,6 +262,16 @@
 			<location>D:/Projekty/STM32/Atollic/StrzygaF3/Projects/STM32F30x_StdPeriph_Templates/ENKlibF3.h</location>
 		</link>
 		<link>
+			<name>User/EXTIlibF3.c</name>
+			<type>1</type>
+			<location>D:/Projekty/STM32/Atollic/StrzygaF3/Projects/STM32F30x_StdPeriph_Templates/EXTIlibF3.c</location>
+		</link>
+		<link>
+			<name>User/EXTIlibF3.h</name>
+			<type>1</type>
+			<location>D:/Projekty/STM32/Atollic/StrzygaF3/Projects/STM32F30x_StdPeriph_Templates/EXTIlibF3.h</location>
+		</link>
+		<link>
 			<name>User/GPIOlibF3.c</name>
 			<type>1</type>
 			<location>D:/Projekty/STM32/Atollic/StrzygaF3/Projects/STM32F30x_StdPeriph_Templates/GPIOlibF3.c</location>

@@ -103,8 +103,6 @@ void USART1_IRQHandler() {
 
 void wykonajPolecenie(void) {
 
-	setReferenceCurrent((int8_t) polecenie[0], (int8_t) polecenie[1],
-			(int8_t) polecenie[2]);
 }
 
 //===============================================================================
@@ -129,3 +127,83 @@ void UART2wyslij(uint8_t* dataToSend, uint8_t dlugosc) {
 		USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 	}
 }
+
+
+
+
+
+//
+//
+//
+//
+//
+//
+//
+//#define MLX90614_ADDR (0b1101000 << 1)
+//
+//
+//void MLX90614_Init(void) {
+//	// RCC setup
+//	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+//	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+//
+//	// TODO: enable sensor's power on Unit5
+//
+//
+//	GPIO_PinAFConfig(GPIOB, GPIO_PinSource8, GPIO_AF_4);
+//	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_4);
+//	// I2C1 SCL(PB6), SDA(PB7) pins setup
+//	GPIO_InitTypeDef gpio_init;
+//	gpio_init.GPIO_Mode = GPIO_Mode_AF;
+//	gpio_init.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+//	gpio_init.GPIO_Speed = GPIO_Speed_10MHz;
+//	GPIO_Init(GPIOB, &gpio_init);
+//
+//
+//	// I2C1 setup
+//	I2C_DeInit(I2C1);
+//	I2C_InitTypeDef I2C_InitStruct;
+//	I2C_StructInit(&I2C_InitStruct);
+//	I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;
+//	//I2C_InitStruct.I2C_ClockSpeed = 100000;
+//	//I2C_InitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
+//	I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;
+//	I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+//	I2C_InitStruct.I2C_Timing = 100000;
+//	I2C_InitStruct.I2C_OwnAddress1 = 0x00;
+//	I2C_Init(I2C1, &I2C_InitStruct);
+//
+//	// Enable I2C1
+//	I2C_Cmd(I2C1, ENABLE);
+//
+//	// Wait for I2C1 to become ready
+//	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+//}
+//
+///**
+// * @brief This function reads a single 16-bit value from the device's register
+// * @param reg Register's address
+// * @return Register's value
+// */
+//uint8_t i2c_read(uint8_t DeviceAddr, uint8_t RegAddr, uint8_t* pBuffer, uint16_t len)
+//{
+//  /* Test on BUSY Flag */
+//
+//  while(I2C_GetFlagStatus(I2C1, I2C_ISR_BUSY) != RESET)
+//  {
+//
+//  }
+//  I2C_TransferHandling(I2C1, DeviceAddr, 1, I2C_SoftEnd_Mode, I2C_Generate_Start_Write);
+//
+//
+//  /* !!! Wait until TXIS flag is set !!! */
+//
+//  while(I2C_GetFlagStatus(I2C1, I2C_ISR_TXIS) == RESET) // PROBLEM HERE!!!!!!!!!!!!!!!
+//  {
+//
+//  }
+//
+//
+//}
+//

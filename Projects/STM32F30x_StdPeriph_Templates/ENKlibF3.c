@@ -131,14 +131,14 @@ void TIM2_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM2, TIM_IT_CC2) != RESET) {
 		TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
 
-		enkPredkosc1 = 4608000 / TIM_GetCapture2(TIM2);
+		enkPredkosc[0] = 4608000 / TIM_GetCapture2(TIM2);
 
 		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_15) == 0) {
-			enkPredkosc1 = (-enkPredkosc1);
+			enkPredkosc[0] = (-enkPredkosc[0]);
 		}
 	} else if (TIM_GetITStatus(TIM2, TIM_IT_CC1) != RESET) {
 		TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
-		enkPredkosc1 = 0;
+		enkPredkosc[0] = 0;
 	}
 }
 //==========enkoder2===============================================
@@ -148,14 +148,14 @@ void TIM1_UP_TIM16_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM16, TIM_IT_CC1) != RESET) {
 		TIM_ClearITPendingBit(TIM16, TIM_IT_CC1);
 
-		enkPredkosc2 = 4608000 / TIM_GetCapture1(TIM16);
+		enkPredkosc[1] = 4608000 / TIM_GetCapture1(TIM16);
 
 		if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_10) == 0) {
-			enkPredkosc2 = (-enkPredkosc2);
+			enkPredkosc[1] = (-enkPredkosc[1]);
 		}
 	} else if (TIM_GetITStatus(TIM16, TIM_IT_Update) != RESET) {
 		TIM_ClearITPendingBit(TIM16, TIM_IT_Update);
-		enkPredkosc2 = 0;
+		enkPredkosc[1] = 0;
 	}
 }
 //==========enkoder3===============================================
@@ -165,17 +165,15 @@ void TIM1_TRG_COM_TIM17_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM17, TIM_IT_CC1) != RESET) {
 		TIM_ClearITPendingBit(TIM17, TIM_IT_CC1);
 
-		enkPredkosc3 = 4608000/ TIM_GetCapture1(TIM17);
+		enkPredkosc[2] = 4608000/ TIM_GetCapture1(TIM17);
 
 		if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_11) == 0) {
-			enkPredkosc3 = (-enkPredkosc3);
+			enkPredkosc[2] = (-enkPredkosc[2]);
 		}
 	} else if (TIM_GetITStatus(TIM17, TIM_IT_Update) != RESET) {
 		TIM_ClearITPendingBit(TIM17, TIM_IT_Update);
-		enkPredkosc3 = 0;
+		enkPredkosc[2] = 0;
 	}
-
-	lowPassFilterENKtest();
 }
 
 /*
@@ -196,6 +194,12 @@ void TIM1_TRG_COM_TIM17_IRQHandler(void) {
 	lowPassFilterENKtest();
 }
 */
+
+
+/*
+ * Filtr dolnoprzepustowy
+ * */
 void lowPassFilterENKtest(void) {
-	enkTest = enkTest + (int) (0.1 * (enkPredkosc3 - enkTest));
+//	enkTest = enkTest + (int) (0.1 * (enkPredkosc3 - enkTest));
 }
+

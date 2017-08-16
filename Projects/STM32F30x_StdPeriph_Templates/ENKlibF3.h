@@ -20,16 +20,13 @@
 
 #include "stm32f30x.h"
 #include "main.h"
+#include "EXTIlibF3.h"
 
 void initENK(void);
 
-int16_t enkPredkosc1;
-int16_t enkPredkosc2;
-int16_t enkPredkosc3;
+volatile int16_t enkPredkosc[3];
+volatile int16_t enkRawData[3];
 
-int16_t enkPredkosc[3];
-
-int16_t enkTest;
 void lowPassFilterENKtest(void);
 
 

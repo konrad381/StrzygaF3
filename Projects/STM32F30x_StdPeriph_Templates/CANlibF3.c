@@ -1,6 +1,6 @@
 #include "CANlibF3.h"
 
-const int stronaPlytka = 1; //1-prawa 0-lewa
+const int stronaPlytka = 0; //1-prawa 0-lewa
 
 //==================================================================================================
 //Funkcja inicjalizuje CAN na pinach PA11 CAN_RX / PA12 CAN_TX
@@ -127,7 +127,7 @@ void readSpeed() {
 	read1 = RxMessage.Data[1];
 	read2 = RxMessage.Data[2];
 	read3 = RxMessage.Data[3];
-	setPWM(read1*20, read2*20, read3*20);
+	setReferenceSpeed(read1*20, read2*20, read3*20);
 }
 
 void pwmStartStop() {
@@ -146,12 +146,12 @@ void sendSpeed(void) {
 	} else {
 		TxMessage.Data[0] = 'v';
 	}
-	TxMessage.Data[1] = enkPredkosc1 & 0xFF;
-	TxMessage.Data[2] = (enkPredkosc1 & 0xFF00) >> 8;
-	TxMessage.Data[3] = enkPredkosc2 & 0xFF;
-	TxMessage.Data[4] = (enkPredkosc2 & 0xFF00) >> 8;
-	TxMessage.Data[5] = enkPredkosc3 & 0xFF;
-	TxMessage.Data[6] = (enkPredkosc3 & 0xFF00) >> 8;
+		TxMessage.Data[1] = enkPredkosc[0] & 0xFF;
+		TxMessage.Data[2] = (enkPredkosc[0] & 0xFF00) >> 8;
+		TxMessage.Data[3] = enkPredkosc[1] & 0xFF;
+		TxMessage.Data[4] = (enkPredkosc[1] & 0xFF00) >> 8;
+		TxMessage.Data[5] = enkPredkosc[2] & 0xFF;
+		TxMessage.Data[6] = (enkPredkosc[2] & 0xFF00) >> 8;
 	CAN_Transmit(CAN1, &TxMessage);
 }
 
@@ -174,7 +174,6 @@ void sendCurrent(void) {
 }
 
 void sendParam(void) {
-	lowPassFilterFIR();
 	static int licznik = -1;
 	if (licznik == -1 && stronaPlytka == 1) {
 		licznik = 25;

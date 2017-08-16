@@ -190,7 +190,9 @@ void initPwm() {
 void TIM1_BRK_TIM15_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM15, TIM_IT_Update) != RESET) {
 		TIM_ClearITPendingBit(TIM15, TIM_IT_Update);
-		//lowPassFilterSimple();
-		//setPWM(referenceCurrent[0]*20, referenceCurrent[1]*20, referenceCurrent[2]*20);
+		lowPassFilterFIR();
 	}
 }
+
+
+

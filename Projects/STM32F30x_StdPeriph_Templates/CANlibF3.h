@@ -24,12 +24,6 @@
 CanTxMsg TxMessage;
 CanRxMsg RxMessage;
 
-volatile int8_t zadPredkosc1;
-volatile int8_t zadPredkosc2;
-volatile int8_t zadPredkosc3;
-
-
-
 void initCan(void);
 void USB_LP_CAN1_RX0_IRQHandler(void);
 void USB_HP_CAN1_TX_IRQHandler(void);

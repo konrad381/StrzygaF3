@@ -1,16 +1,20 @@
 #include "PIDlibF3.h"
 
+//Funkcja moze zwracac strukture, struktura moze zawierac Array
+float inertialGain = 0.01;
+
 uint16_t currentGainP = 8;
 uint16_t currentGainI = 430;
 uint16_t currentGainK = 1;
 
-volatile int16_t velocityRegOut[3];
+
+//===============================================================================
+int16_t velocityRegOut[3];
 volatile int16_t velocityRegIntegral[3];
 volatile int16_t velocityRegError[3];
 volatile int16_t velocityRegSaturation[3];
 
-void setPIVelocity(void) {
-
+void setPIVelocity(volatile int16_t referenceVelocity[3]) {
 	for (int i = 0; i < 3; i++) {
 		velocityRegError[i] = (referenceVelocity[i] - enkPredkosc[i])
 				* velocityGainP;
@@ -24,19 +28,20 @@ void setPIVelocity(void) {
 			velocityRegSaturation[i] = velocityRegOut[i] + 2000;
 			velocityRegOut[i] = -2000;
 		}
+		referenceData.referenceVelocity[i] = velocityRegOut[i];
 	}
-	setReferenceCurrent(velocityRegOut[0], velocityRegOut[1],
-			velocityRegOut[2]);
 }
 
-volatile int16_t currentRegOut[3];
+
+//===============================================================================
+int16_t currentRegOut[3];
 volatile int16_t currentRegIntegral[3];
 volatile int16_t currentRegError[3];
 volatile int16_t currentRegSaturation[3];
 
-void setPICurrent(void) {
+void setPICurrent(volatile int16_t referenceCurrent[3]) {
 	for (int i = 0; i < 3; i++) {
-		currentRegError[i] = (referenceCurrent[i] - currentValue[i])
+		currentRegError[i] = (*referenceCurrent - currentValue[i])
 				* currentGainP;
 		currentRegIntegral[i] += (currentRegError[i]
 				- (currentRegSaturation[i] * currentGainK)) * currentGainI;
@@ -48,31 +53,52 @@ void setPICurrent(void) {
 			currentRegSaturation[i] = currentRegOut[i] + 2000;
 			currentRegOut[i] = -2000;
 		}
+		 referenceData.referenceCurrent[i]=currentRegOut[i];
 	}
-	setPWM(0, 0, currentRegOut[2]);
 }
 
-void setReferenceCurrent(int16_t current1, int16_t current2, int16_t current3) {
-	referenceCurrent[0] = current1;
-	referenceCurrent[1] = current2;
-	referenceCurrent[2] = current3;
+
+//===============================================================================
+void setInertialInput(volatile int16_t referenceInput[3]) {
+	for (int i = 0; i < 3; i++) {
+		referenceData.referenceInertial[i] += (int16_t) (inertialGain
+				* (referenceInput[i]-referenceData.referenceInertial[i]));
+	}
 }
 
-void setReferenceVelocity(int16_t velocity1, int16_t velocity2,
-		int16_t velocity3) {
-	referenceVelocity[0] = velocity1;
-	referenceVelocity[1] = velocity2;
-	referenceVelocity[2] = velocity3;
+
+//===============================================================================
+void setReferenceSpeed(int16_t speed1, int16_t speed2, int16_t speed3) {
+	referenceData.referenceValu[0] = speed1;
+	referenceData.referenceValu[1] = speed2;
+	referenceData.referenceValu[2] = speed3;
 }
 
+
+//===============================================================================
 void resetIntegralValue(void) {
-	setPWM(0,0,0);
+	setPWM(0, 0, 0);
 	for (int i = 0; i < 3; i++) {
 		currentRegIntegral[i] = 0;
 		currentRegSaturation[i] = 0;
-		referenceCurrent[i] = 0;
+		referenceData.referenceCurrent[i] = 0;
 		velocityRegIntegral[i] = 0;
 		velocityRegSaturation[i] = 0;
-		referenceVelocity[i] = 0;
+		referenceData.referenceVelocity[i] = 0;
+		referenceData.referenceValu[i]=0;
+		referenceData.referenceInertial[i]=0;
 	}
+}
+
+
+//===============================================================================
+void setPWMreg(volatile int16_t referenceDuty[3]) {
+	setPWM(referenceDuty[0], referenceDuty[1], referenceDuty[2]);
+}
+
+
+//===============================================================================
+void regulatorSilnikow(void) {
+	setInertialInput(referenceData.referenceValu);
+	setPWMreg(referenceData.referenceInertial);
 }

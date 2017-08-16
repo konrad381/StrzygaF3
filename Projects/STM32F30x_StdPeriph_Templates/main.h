@@ -33,6 +33,9 @@
 #include "stm32f30x.h"
 
 void TimingDelay_Decrement(void);
+static __IO uint32_t TimingDelay;
+void Delay(__IO uint32_t nTime);
+RCC_ClocksTypeDef RCC_Clocks;
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

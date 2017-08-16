@@ -49,5 +49,4 @@ void initGpioLed(void){
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 	GPIO_SetBits(GPIOC,GPIO_Pin_8);
-	GPIO_SetBits(GPIOC,GPIO_Pin_8);
 }
